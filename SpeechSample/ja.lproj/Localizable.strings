@@ -1,0 +1,9 @@
+"SpeechSynthesizer"	= "おしゃべりテスト";
+"EnterText"	= "テキストを入力して下さい";
+"Slow"		= "遅い";
+"Normal"	= "標準";
+"Fast"		= "速い";
+"Rate"		= "速度";
+"Pitch"		= "調子";
+"Volume"	= "音量";
+"Japanese"	= "日本語";
