@@ -16,3 +16,8 @@ Requirements
  - iOS 7.0
  - Xcode 5.0.2
 
+Screen Shot
+============
+
+![スクリーンショット](screenshot.png "アプリの画面")
+
