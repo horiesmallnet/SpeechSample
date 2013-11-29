@@ -3,7 +3,7 @@
  * FILE:	RootViewController.m
  * DESCRIPTION:	SpeechSynthesizer: Root View Controller
  * DATE:	Thu, Nov 28 2013
- * UPDATED:	Thu, Nov 28 2013
+ * UPDATED:	Fri, Nov 29 2013
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
@@ -51,6 +51,12 @@ enum {
   kNumberOfSections
 };
 
+NS_ENUM(NSInteger, kSegmentType) {
+  kSpeechSlow,
+  kSpeechNormal,
+  kSpeechFast
+};
+
 NS_ENUM(NSInteger, kSliderTag) {
   kTagPitch = 8801,
   kTagVolume
@@ -61,6 +67,7 @@ static NSString * const	kLangUSEnglish = @"en-US";
 
 @interface RootViewController () <UITextFieldDelegate>
 @property (nonatomic,strong) UITextField *	textField;
+@property (nonatomic,strong) UISegmentedControl *	segmentedControl;
 @property (nonatomic,strong) NSString *	text;
 @property (nonatomic,strong) NSString *	language;
 @property (nonatomic,assign) float	rate;
@@ -117,6 +124,7 @@ static NSString * const	kLangUSEnglish = @"en-US";
   textField.borderStyle	= UITextBorderStyleRoundedRect;
   textField.clearButtonMode	= UITextFieldViewModeWhileEditing;
   textField.placeholder	= NSLocalizedString(@"EnterText", @"");
+  textField.adjustsFontSizeToFitWidth	= YES;
   self.tableView.tableHeaderView = textField;
   self.textField	= textField;
 
@@ -175,7 +183,7 @@ static NSString * const	kLangUSEnglish = @"en-US";
   ];
   UISegmentedControl *	segmented;
   segmented = [[UISegmentedControl alloc] initWithItems:items];
-  segmented.selectedSegmentIndex = 1;
+  segmented.selectedSegmentIndex = kSpeechSlow;
   [segmented addTarget:self
 	     action:@selector(segmentedAction:)
 	     forControlEvents:UIControlEventValueChanged];
@@ -188,9 +196,9 @@ static NSString * const	kLangUSEnglish = @"en-US";
 -(void)segmentedAction:(UISegmentedControl *)segmented
 {
   switch (segmented.selectedSegmentIndex) {
-    case 0: self.rate = AVSpeechUtteranceMinimumSpeechRate; break;
-    case 1: self.rate = AVSpeechUtteranceDefaultSpeechRate; break;
-    case 2: self.rate = AVSpeechUtteranceMaximumSpeechRate; break;
+    case kSpeechSlow:   self.rate = AVSpeechUtteranceMinimumSpeechRate; break;
+    case kSpeechNormal: self.rate = AVSpeechUtteranceDefaultSpeechRate; break;
+    case kSpeechFast:   self.rate = AVSpeechUtteranceMaximumSpeechRate; break;
   }
 }
 
@@ -262,9 +270,11 @@ static NSString * const	kLangUSEnglish = @"en-US";
 
   if (on) {
     self.language = kLangJapanese;
+    self.segmentedControl.selectedSegmentIndex = kSpeechSlow;
   }
   else {
     self.language = kLangUSEnglish;
+    self.segmentedControl.selectedSegmentIndex = kSpeechNormal;
   }
 }
 
@@ -295,6 +305,7 @@ static NSString * const	kLangUSEnglish = @"en-US";
     case kSectionRate: {
 	cell = [self create_SegmentedTableCell];
 	text = NSLocalizedString(@"Rate", @"");
+	self.segmentedControl = (UISegmentedControl *)cell.accessoryView;
       }
       break;
     case kSectionPitch: {
@@ -360,6 +371,13 @@ static NSString * const	kLangUSEnglish = @"en-US";
   utterance.pitchMultiplier = self.pitch;	// [0.5 - 2.0] Default=1.0
   utterance.volume = self.volume;		// [0.0 - 1.0] Default=1.0
   utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:self.language];
+  /*
+   * XXX:
+   * 以下のパラメータは読み上げ前の間と読み上げ後の間を指定するようだが、
+   * 連続して読み上げる場合以外は設定しても無意味かな。
+   */
+  utterance.preUtteranceDelay	= 0.5;	// Default = 0.0
+  utterance.postUtteranceDelay	= 0.2;	// Default = 0.0
 
   AVSpeechSynthesizer *	synthesizer;
   synthesizer = [AVSpeechSynthesizer new];
