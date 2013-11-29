@@ -84,7 +84,7 @@ static NSString * const	kLangUSEnglish = @"en-US";
     self.title = NSLocalizedString(@"SpeechSynthesizer", @"");
 
     self.text	= nil;
-    self.rate	= AVSpeechUtteranceDefaultSpeechRate;
+    self.rate	= AVSpeechUtteranceMinimumSpeechRate;
     self.pitch	= 1.0f;
     self.volume	= 1.0f;
 
@@ -271,10 +271,12 @@ static NSString * const	kLangUSEnglish = @"en-US";
   if (on) {
     self.language = kLangJapanese;
     self.segmentedControl.selectedSegmentIndex = kSpeechSlow;
+    self.rate = AVSpeechUtteranceMinimumSpeechRate;
   }
   else {
     self.language = kLangUSEnglish;
     self.segmentedControl.selectedSegmentIndex = kSpeechNormal;
+    self.rate = AVSpeechUtteranceDefaultSpeechRate;
   }
 }
 
